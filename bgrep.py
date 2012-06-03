@@ -47,7 +47,6 @@ This program was originally developed by Robert Xiao <nneonneo@gmail.com>.
 def argparser():
     class ContextAction(argparse.Action):
         def __call__(self, parser, namespace, values, option_string=None):
-            print(values)
             if values:
                 context = values
             else:
