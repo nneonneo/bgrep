@@ -480,7 +480,7 @@ def check_filename(fn):
             return False
     if opts.include:
         for i in opts.include:
-            if fnmatch.fnmatch(fn, e):
+            if fnmatch.fnmatch(fn, i):
                 return True
         return False
     return True
