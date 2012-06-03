@@ -476,11 +476,14 @@ def match_chunks(fn, chunks):
             searchpos -= cutpos
     return count
 
-def check_filename(fn):
+def is_excluded(fn):
     fn = os.path.basename(fn)
     for e in opts.exclude:
         if fnmatch.fnmatch(fn, e):
-            return False
+            return True
+    return False
+
+def is_included(fn):
     if opts.include:
         for i in opts.include:
             if fnmatch.fnmatch(fn, i):
@@ -489,10 +492,10 @@ def check_filename(fn):
     return True
 
 def examine_file(fn):
-    if not check_filename(fn):
+    if is_excluded(fn):
         return
 
-    if fn == '-':
+    if fn == '-' and is_included('-'):
         count = match_chunks(opts.label, readline_chunks(sys.stdin.buffer))
         report_file(opts.label, count)
         return
@@ -510,8 +513,13 @@ def examine_file(fn):
         else:
             # directories count as having no matches, for any search
             report_file(fn, 0)
+        return
 
-    elif stat.S_ISREG(st.st_mode):
+    # include checks apply only to files
+    if not is_included(fn):
+        return
+
+    if stat.S_ISREG(st.st_mode):
         try:
             f = open(fn, 'rb')
         except Exception as e:
