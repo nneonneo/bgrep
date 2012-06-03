@@ -346,6 +346,9 @@ def report_match(fn, s, match, offset=0):
     if opts.quiet:
         return
 
+    if opts.count or opts.file_summary:
+        return
+
     write_filename(fn, ':')
 
     start, end = match.start(), match.end()
