@@ -520,6 +520,10 @@ def examine_file(fn):
         return
 
     if stat.S_ISREG(st.st_mode):
+        if st.st_size == 0:
+            # mmap may fail on zero-length files
+            report_file(fn, 0)
+            return
         try:
             f = open(fn, 'rb')
         except Exception as e:
