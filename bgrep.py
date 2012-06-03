@@ -319,7 +319,7 @@ def flush_if_needed():
 def format_hex(s, ctx_start, ctx_end, start, end):
     for i in range(start, end):
         sys.stdout.write('%02x' % s[i])
-        if (opts.hex_group is not None) and (i - ctx_start) % opts.hex_group == 0 and i != end:
+        if (opts.hex_group is not None) and (i - ctx_start) % opts.hex_group == opts.hex_group-1 and i != end:
             sys.stdout.write(' ')
 
 def format_raw(s, ctx_start, ctx_end, start, end):
