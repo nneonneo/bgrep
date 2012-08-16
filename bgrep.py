@@ -466,7 +466,7 @@ def match_chunks(fn, chunks):
     for chunk in chunks:
         cur.extend(chunk)
         while 1:
-            if count >= opts.max_count:
+            if opts.max_count and count >= opts.max_count:
                 return count
             m = state.pattern.search(cur, searchpos)
             if m is None:
