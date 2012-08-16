@@ -75,11 +75,12 @@ def argparser():
     parser.add_argument('args_tail', help=argparse.SUPPRESS, nargs=argparse.REMAINDER)
 
     group = parser.add_argument_group('Pattern selection and interpretation')
-    group.add_argument('-E', '--extended-regexp', help='PATTERN is a Python byte regexp',
+    exgroup = group.add_mutually_exclusive_group()
+    exgroup.add_argument('-E', '--extended-regexp', help='PATTERN is a Python byte regexp',
         dest='pat_type', action='store_const', const='extended', default='basic')
-    group.add_argument('-F', '--fixed-regexp', help='PATTERN is a single binary string',
+    exgroup.add_argument('-F', '--fixed-regexp', help='PATTERN is a single binary string',
         dest='pat_type', action='store_const', const='fixed')
-    group.add_argument('-G', '--basic-regexp', help='PATTERN is a basic hexadecimal string, optionally with wildcards (default)',
+    exgroup.add_argument('-G', '--basic-regexp', help='PATTERN is a basic hexadecimal string, optionally with wildcards (default)',
         dest='pat_type', action='store_const', const='basic')
     group.add_argument('-e', '--regexp', metavar='PATTERN', help='use PATTERN as a regular expression')
     group.add_argument('-f', '--file', help='obtain PATTERN from FILE',
