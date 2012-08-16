@@ -283,6 +283,7 @@ def load_pattern(regexp):
         pat = []
         used_star = False
         num_hex = [0]
+        regexp = regexp.lower()
         try:
             # we use 'in' to test "equality" because elements of byte strings are integers
             while i < len(regexp):
