@@ -44,6 +44,14 @@ bgrep (binary-oriented grep) %(version)s
 This program was originally developed by Robert Xiao <nneonneo@gmail.com>.
 '''.strip() % {'version': __version__}
 
+class ExtendAction(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        items = getattr(namespace, self.dest, None)
+        if items is None:
+            items = []
+        items.extend(values)
+        setattr(namespace, self.dest, items)
+
 def argparser():
     class ContextAction(argparse.Action):
         def __call__(self, parser, namespace, values, option_string=None):
@@ -63,7 +71,8 @@ def argparser():
         add_help=False
     )
 
-    parser.add_argument('args', help=argparse.SUPPRESS, nargs='*')
+    parser.add_argument('args', help=argparse.SUPPRESS, nargs='*', action=ExtendAction)
+    parser.add_argument('args_tail', help=argparse.SUPPRESS, nargs=argparse.REMAINDER)
 
     group = parser.add_argument_group('Pattern selection and interpretation')
     group.add_argument('-E', '--extended-regexp', help='PATTERN is a Python byte regexp',
@@ -171,7 +180,14 @@ def main():
     global state
     state = argparse.Namespace()
     parser = argparser()
+
+    # argparse can't inherently parse interleaved command lines like getopt does.
+    # Work around this by consuming the input one [options, arguments] chunk at a time.
     opts = parser.parse_args()
+    optargs = opts.args_tail
+    while optargs:
+        opts = parser.parse_args(optargs, opts)
+        optargs = opts.args_tail
 
     if opts.version:
         print(HELP_VERSION)
