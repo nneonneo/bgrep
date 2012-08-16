@@ -4,10 +4,10 @@ Byte-oriented grep tool.
 
 Robert Xiao <nneonneo@gmail.com>
 Created June 2, 2012
-Last Updated June 2, 2012
+Last Updated Aug 16, 2012
 """
 
-__version__ = '0.1'
+__version__ = '0.2'
 
 import argparse
 import sys
@@ -142,11 +142,11 @@ def argparser():
     # left out: --binary-files, --text, -I (--binary-files=without-match), -d read
 
     group = parser.add_argument_group('Context control')
-    group.add_argument('-B', '--before-context', metavar='NUM', help='print NUM bytes of leading context',
-        type=int, default=0)
-    group.add_argument('-A', '--after-context', metavar='NUM', help='print NUM bytes of leading context',
-        type=int, default=0)
-    group.add_argument('-C', '--context', metavar='NUM', help='print NUM bytes of leading context',
+    group.add_argument('-B', '--before-context', metavar='NUM', help='print NUM bytes of leading context (default 7)',
+        type=int, default=7)
+    group.add_argument('-A', '--after-context', metavar='NUM', help='print NUM bytes of trailing context (default 8)',
+        type=int, default=8)
+    group.add_argument('-C', '--context', metavar='NUM', help='print NUM bytes of output context',
         action=ContextAction, type=int)
     group.add_argument('--color', '--colour', metavar='WHEN', help="use colour to distinguish the matching string. WHEN may be 'always', 'never' or 'auto' (default).",
         nargs='?', choices=('always', 'never', 'auto'), dest='colour', default='auto')
@@ -154,8 +154,8 @@ def argparser():
 
     group = parser.add_argument_group('bgrep-specific options')
     # hexdump basically combines -n, --hex-addr, -t hex and -t printable
-    group.add_argument('-t', '--output-format', metavar='FORMAT', help="print file bytes in FORMAT. FORMAT may be 'hexdump', 'hex', 'printable', 'escape' or 'raw'.",
-        choices=('hexdump', 'hex', 'raw', 'printable', 'escapes'), default='hex')
+    group.add_argument('-t', '--output-format', metavar='FORMAT', help="print file bytes in FORMAT. FORMAT may be 'hexdump' (default), 'hex', 'printable', 'escape' or 'raw'.",
+        choices=('hexdump', 'hex', 'raw', 'printable', 'escapes'), default='hexdump')
     group.add_argument('--hex-addr', help='print addresses in hexadecimal',
         action='store_true', default='auto')
     group.add_argument('--dec-addr', help='print addresses in decimal',
