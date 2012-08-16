@@ -251,6 +251,8 @@ def main():
     except KeyboardInterrupt as e:
         print()
         return 130
+    except SystemExit as e:
+        raise
     except BaseException as e:
         err(e)
 
