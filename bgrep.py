@@ -163,6 +163,16 @@ def argparser():
     group.add_argument('--hex-group', metavar='BYTES', help='group output hex bytes into groups of BYTES bytes each',
         type=int)
 
+    group = parser.add_argument_group('bgrep word-size search',
+'''Configure word-search mode, which works with basic (-G) patterns.
+In word-search mode, the pattern is considered to consist of a series of complete words.
+With word search in -G mode, the * operator still matches any sequence of bytes,
+while the new ** operator matches any sequence of words.''')
+    group.add_argument('-w', '--word-search', help='Enable word search with the specified word size in bytes',
+        type=int, default=None)
+    group.add_argument('-W', '--flip-words', help='Flip the bytes of each word (useful for searching for little-endian words)',
+        action='store_true')
+
     return parser
 
 def msg(*x):
@@ -247,6 +257,11 @@ def main():
     if opts.hex_addr == 'auto':
         opts.hex_addr = opts.output_format == 'hexdump'
 
+    if opts.flip_words and not opts.word_search:
+        err("can't specify -W/--flip-words without -w/--word-search")
+    if opts.word_search and opts.pat_type != 'basic':
+        err("-w/--word-search requires basic (-G) regexps")
+
     try:
         bgrep()
     except KeyboardInterrupt as e:
@@ -296,30 +311,53 @@ def load_pattern(regexp):
                     pat.append('|')
                     num_hex.append(0)
                 elif c in b'*':
-                    pat.append('.*')
-                    used_star = True
-                    i += 1
+                    if regexp[i:i+2] == b'**':
+                        if opts.word_search:
+                            pat.append('(?:.{%d})*' % opts.word_search)
+                        else:
+                            err("can't use ** without word search mode")
+                        used_star = True
+                        i += 2
+                    else:
+                        pat.append('.*')
+                        used_star = True
+                        i += 1
                     continue
-                a = HEXPATTERN_TABLE[regexp[i]]
-                b = HEXPATTERN_TABLE[regexp[i+1]]
-                i += 2
-                num_hex[-1] += 1
-                if a == -1 and b == -1:
-                    pat.append('.')
-                elif a == -1:
-                    pat.append('[' + ''.join(r'\x' + HEXDIGITS[a] + HEXDIGITS[b] for a in range(16)) + ']')
-                elif b == -1:
-                    pat.append(r'[\x%x0-\x%xf]' % (a, a))
-                else:
-                    pat.append(r'\x%x%x' % (a, b))
+
+                nbytes = 1
+                if opts.word_search:
+                    nbytes = opts.word_search
+                word = []
+                for _ in range(nbytes):
+                    a = HEXPATTERN_TABLE[regexp[i]]
+                    b = HEXPATTERN_TABLE[regexp[i+1]]
+                    i += 2
+                    num_hex[-1] += 1
+                    if a == -1 and b == -1:
+                        p = '.'
+                    elif a == -1:
+                        p = '[' + ''.join(r'\x' + HEXDIGITS[a] + HEXDIGITS[b] for a in range(16)) + ']'
+                    elif b == -1:
+                        p = r'[\x%x0-\x%xf]' % (a, a)
+                    else:
+                        p = r'\x%x%x' % (a, b)
+                    word.append(p)
+                if opts.flip_words:
+                    word = word[::-1]
+                pat.extend(word)
         except IndexError:
-            err("odd-length hex pattern")
+            if opts.word_search:
+                err("pattern length was not a multiple of the word size")
+            else:
+                err("odd-length hex pattern")
         except KeyError as e:
             err("bad hex character '%c'" % e.args[0])
         if used_star:
             state.pat_maxlen = None
         else:
             state.pat_maxlen = max(num_hex)
+        if not pat:
+            warn("empty pattern")
         return ''.join(pat).encode('ascii')
     else:
         err("bad pat_type " + opts.pat_type)
