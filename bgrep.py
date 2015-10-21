@@ -1,13 +1,13 @@
-#!/usr/bin/env python3.2
+#!/usr/bin/env python3
 """
 Byte-oriented grep tool.
 
 Robert Xiao <nneonneo@gmail.com>
 Created June 2, 2012
-Last Updated Aug 16, 2012
+Last Updated Oct 21, 2015
 """
 
-__version__ = '0.2'
+__version__ = '0.3'
 
 import argparse
 import sys
