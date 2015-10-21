@@ -142,7 +142,7 @@ def argparser():
     # left out: --binary-files, --text, -I (--binary-files=without-match), -d read
 
     group = parser.add_argument_group('Context control')
-    group.add_argument('-B', '--before-context', metavar='NUM', help='print NUM bytes of leading context (default 7)',
+    group.add_argument('-B', '--before-context', metavar='NUM', help='print NUM bytes of leading context (default 8)',
         type=int, default=8)
     group.add_argument('-A', '--after-context', metavar='NUM', help='print NUM bytes of trailing context (default 8)',
         type=int, default=8)
