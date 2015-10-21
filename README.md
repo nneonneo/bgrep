@@ -13,6 +13,7 @@ Examples:
 - `bgrep -C 16 -t hex '09f91102' dvdcss` - find instances of a certain encryption key in a program
 - `bgrep -F 'PK' file.zip` - find zip entry headers in a zip file
 - `bgrep -E '\0[\x20-\x7e]{1,8}\0' unknown.exe` - find printable strings between 1 and 8 chars long in a program (using Python regex syntax)
+- `bgrep -W -w 4 '0000f4ce' input.bin` - find the word `0x0000f4ce` in little-endian order (ce f4 00 00)
 
 `bgrep` defaults to displaying binary content in a hexdump format, and even supports colour by default on supported terminals, just like `grep`.
 
