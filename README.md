@@ -15,6 +15,8 @@ Examples:
 - `bgrep -E '\0[\x20-\x7e]{1,8}\0' unknown.exe` - find printable strings between 1 and 8 chars long in a program (using Python regex syntax)
 - `bgrep -W -w 4 '0000f4ce' input.bin` - find the word `0x0000f4ce` in little-endian order (ce f4 00 00)
 
+(note that on Windows you have to omit the single quotes "'")
+
 `bgrep` defaults to displaying binary content in a hexdump format, and even supports colour by default on supported terminals, just like `grep`.
 
 ## Installing

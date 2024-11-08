@@ -383,7 +383,7 @@ def format_hex(s, ctx_start, ctx_end, start, end):
 def format_raw(s, ctx_start, ctx_end, start, end):
     sys.stdout.write(s[start:end].decode('iso-8859-1'))
 
-PRINTABLE_TABLE = b'''................................ !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~.................................................................................................................................'''
+PRINTABLE_TABLE = b'''................................ !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~.................................................................................................................................'''
 
 def format_printable(s, ctx_start, ctx_end, start, end):
     sys.stdout.write(s[start:end].translate(PRINTABLE_TABLE).decode('iso-8859-1'))
